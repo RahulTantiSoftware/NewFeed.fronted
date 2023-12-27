@@ -52,6 +52,9 @@ const PostBox = styled.div`
   border-radius: 10px;
   background: white;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
+  @media (max-width: 768px) {
+      display: none;
+  }
 `;
 
 const Content = styled.div`
@@ -133,6 +136,7 @@ const UserProfile = styled.div`
   box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
   >img {
     width: 100%;
+    height: 100%;
     object-fit: cover;
   }
 

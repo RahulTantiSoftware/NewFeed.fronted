@@ -12,7 +12,7 @@ import styled from "styled-components";
 
 
 const FeedHome = (props) => {
-  const [postData, setPostData]       = useState();
+  const [postData, setPostData]       = useState(null);
   const [profileData, setProfileData] = useState();
   const navigate                      = useNavigate();
   const axiosPrivate                  = useAxiosPrivate();
@@ -72,7 +72,8 @@ const Layout = styled.div`
   @media (max-width: 768px) {
     display: flex;
     flex-direction: column;
-    padding: 0 5px;
+    padding-top: 18%;
+    padding-bottom: 60px;
   }
 `;
 export default FeedHome;

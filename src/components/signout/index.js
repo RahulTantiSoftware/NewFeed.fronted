@@ -16,7 +16,7 @@ const SignOut = ({ handleCloseSignOut,profileData }) => {
 
   const handleSignOut = async () => {
     await UserAuth.signOut(axiosPrivate);
-    navigate('/home', { state: { from: location }, replace: true });
+    navigate('/', { state: { from: location }, replace: true });
   };
 
 
@@ -90,6 +90,7 @@ const UserProfile = styled.div`
 
   >img {
     width: 100%;
+    height: 100%;
     object-fit: cover;
   }
   >svg {

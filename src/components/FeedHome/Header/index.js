@@ -4,11 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import *  as fortawesome  from "@fortawesome/free-solid-svg-icons";
 import  SignOut from "../../signout/index";
 import  ProfileImage from "../../ProfileImage";
-import styled from "styled-components";
+import NewPost from "../Posts/newPost";
+import {Link, useNavigate,useLocation } from "react-router-dom";
+import styled,{css} from "styled-components";
 
 const Header = ({profileData}) => {
 
-  const [showSignOut, setShowSignOut] = useState(false);
+  const [showSignOut, setShowSignOut]   = useState(false);
+  const [newPostPopup, setNewPostPopup] = useState(false);
+  const navigate                        = useNavigate();
+  const location                        = useLocation();
 
   const handleMeClick = () => {
     setShowSignOut(!showSignOut);
@@ -17,15 +22,32 @@ const Header = ({profileData}) => {
   const handleCloseSignOut = () => {
     setShowSignOut(false);
   };
+  
+
+  const navigateMessaging = ()=>{
+    navigate('/messaging', { state: {  from: location},replace: true });
+  };
+
+  const navigateFeed = ()=>{
+    navigate('/feed', { state: { from: location },replace: true  });
+  };
 
   return (
     <Container>
       <Content>
+
         <Logo>
           <a href="/home">
             <img className="linkedin-logo" src={LinkedinLogo} alt="LinkedinLogo" />
           </a>
         </Logo>
+
+          <UserSmallMedia isSmallMedia={true}>
+            <UserProfile>
+              <ProfileImage profileData={profileData} />
+            </UserProfile>
+          </UserSmallMedia>
+
         <Search>
           <div>
             <input type="text" placeholder="Search" />
@@ -34,44 +56,62 @@ const Header = ({profileData}) => {
              <FontAwesomeIcon icon={fortawesome.faSearch} className="faSearch" />
           </SearchIcon>
         </Search>
+
+        <SmallMediaNavList active={"/messaging"==location.pathname}  isSmallMedia={true} onClick={navigateMessaging}>
+          <NavListItem>
+            <FontAwesomeIcon icon={fortawesome.faMessage} /> 
+            <span>Messaging</span>
+          </NavListItem>
+        </SmallMediaNavList>
+
         <Nav>
           <NavListWrap>
-            <NavList className="active">
+            <NavList active={"/feed"==location.pathname} isSmallMedia={true} onClick={navigateFeed}>
               <NavListItem>
                 <FontAwesomeIcon icon={fortawesome.faHome} /> 
                 <span>Home</span>
               </NavListItem>
             </NavList>
 
-            <NavList>
+            <NavList isSmallMedia={true}>
               <NavListItem>
                 <FontAwesomeIcon icon={fortawesome.faPeopleGroup} /> 
                 <span>My Network</span>
               </NavListItem>
             </NavList>
 
-            <NavList>
+            <SmallMediaNavList 
+                isSmallMedia={true} 
+                onClick={()=>{setNewPostPopup(true)}}
+               >
+              <NavListItem>
+                <FontAwesomeIcon icon={fortawesome.faPlusSquare} /> 
+                <span>Post</span>
+              </NavListItem>
+            </SmallMediaNavList>
+
+            <NavList isSmallMedia={true}>
               <NavListItem>
                 <FontAwesomeIcon icon={fortawesome.faBriefcase} /> 
                 <span>Jobs</span>
               </NavListItem>
             </NavList>
 
-            <NavList>
+            <NavList active={"/messaging"==location.pathname}  isSmallMedia={false} onClick={navigateMessaging}>
               <NavListItem>
                 <FontAwesomeIcon icon={fortawesome.faMessage} /> 
                 <span>Messaging</span>
               </NavListItem>
             </NavList>
 
-            <NavList>
+            <NavList isSmallMedia={true}>
               <NavListItem>
                 <FontAwesomeIcon icon={fortawesome.faBell} /> 
                 <span>Notifications</span>
               </NavListItem>
             </NavList>
 
-            <NavList onClick={handleMeClick} >
+            <NavList onClick={handleMeClick} isSmallMedia={false} >
               <User>
                 <UserProfile>
                   <ProfileImage profileData={profileData} />
@@ -83,6 +123,7 @@ const Header = ({profileData}) => {
               </User>
             </NavList>
 
+            <NavList isSmallMedia={false}>
             <Work>
               <a>
                 <img src="/images/nav-work.svg" alt="" />
@@ -92,10 +133,12 @@ const Header = ({profileData}) => {
                 </span>
               </a>
             </Work>
+            </NavList>
           </NavListWrap>
         </Nav>
       </Content>
       {showSignOut && <SignOut profileData = {profileData} handleCloseSignOut={handleCloseSignOut} />}
+      {newPostPopup && <NewPost funVal = {setNewPostPopup} profileData={profileData} />}
     </Container>
   );
 };
@@ -109,6 +152,9 @@ const Container = styled.div`
   top: 0;
   width: 100vw;
   z-index: 100;
+  @media (max-width: 768px) {
+    padding: unset;
+  }
 `;
 
 const Content = styled.div`
@@ -117,11 +163,18 @@ const Content = styled.div`
   align-items: center;
   margin: 0 auto;
   max-width: 1180px;
+  @media (max-width: 768px) {
+    margin: 6px 0 0 -6px;
+    max-height: 65px;
+  }
 `;
 
 const Logo = styled.span`
   margin-right: 8px;
   font-size: 0px;
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Search = styled.div`
@@ -145,7 +198,13 @@ const Search = styled.div`
       border-color: #dce6f1;
       vertical-align: text-top;
     &:focus {
-      width: 320px; /* Set the width when the input is focused */
+      width: 320px; 
+      @media (max-width: 768px) {
+        width: 200px;
+      }
+    }
+    @media (max-width: 768px) {
+        width: 200px;
     }
 
     }
@@ -171,13 +230,15 @@ const Nav = styled.nav`
   display: block;
   width: 100%;
   max-width: 779px;
+  height: 100%;
   margin-top: 3px;
   @media (max-width: 768px) {
     position: fixed;
     left: 0;
+    max-height: 56px;
     bottom: 0;
+    max-width: 559px;
     background: white;
-    width: 100%;
   }
 `;
 
@@ -185,18 +246,39 @@ const NavListWrap = styled.ul`
   display: flex;
   flex-wrap: nowrap;
   list-style-type: none;
+  @media (max-width: 768px) {
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+  }
+`;
 
-  .active {
-    span:after {
-      content: "";
-      transform: scaleX(1);
-      border-bottom: 2px solid var(--white, #fff);
-      bottom: 0;
-      left: 0;
-      position: absolute;
-      transition: transform 0.2s ease-in-out;
-      width: 100%;
-      border-color: rgba(0, 0, 0, 0.9);
+const SmallMediaNavList = styled.li`
+  display: none;
+  align-items: center;
+  @media (max-width: 768px) {
+  ${(props) =>
+    props.isSmallMedia
+      ? css`
+         display: flex;
+        `
+      : css`
+       display: none;
+      `
+    }
+
+  ${(props) =>
+        props.active
+          ? css`
+              color: rgba(0, 0, 0, 0.9);
+            `
+          : css`
+          
+          `
+
     }
   }
 `;
@@ -204,6 +286,64 @@ const NavListWrap = styled.ul`
 const NavList = styled.li`
   display: flex;
   align-items: center;
+  color: rgba(0, 0, 0, 0.6);
+
+  ${(props) =>
+      props.active
+        ? css`
+            span:after {
+              content: "";
+              transform: scaleX(1);
+              border-bottom: 2px solid var(--white, #fff);
+              bottom: 0;
+              left: 0;
+              position: absolute;
+              transition: transform 0.2s ease-in-out;
+              width: 100%;
+              border-color: rgba(0, 0, 0, 0.9);
+            }
+            color: rgba(0, 0, 0, 0.9);
+          `
+        : css`
+        
+        `
+    }
+ 
+  
+  @media (max-width: 768px) {
+    
+  ${(props) =>
+      props.active
+        ? css`
+            span:after {
+              content: "";
+              transform: scaleX(1);
+              border-top: 2px solid var(--white, #fff);
+              border-bottom: none;
+              bottom: 0;
+              top: 0;
+              left: 0;
+              position: absolute;
+              transition: transform 0.2s ease-in-out;
+              width: 100%;
+              border-color: rgba(0, 0, 0, 0.9);
+            }
+            color: rgba(0, 0, 0, 0.9);
+          `
+        : css`
+        
+        `
+  }
+
+  ${(props) =>
+    props.isSmallMedia
+      ? css`
+        `
+      : css`
+       display: none;
+      `
+    }
+  }
 `;
 
 const NavListItem = styled.a`
@@ -215,9 +355,7 @@ const NavListItem = styled.a`
   font-weight: 400;
   justify-content: center;
   line-height: 1.5;
-  min-height: 52px;
-  min-width: 80px;
-  color: rgba(0, 0, 0, 0.6);
+  min-width: 75px;
   position: relative;
   text-decoration: none;
 
@@ -228,23 +366,20 @@ const NavListItem = styled.a`
   span {
     display: flex;
     align-items: center;
+    @media (max-width: 768px) {
+     font-size: 8px;
+    }
     padding: 4px;
   }
 
-  @media (max-width: 768px) {
-    min-width: 70px;
-  }
-
-  &:hover,
-  &:active {
+  &:hover{
     color: rgba(0, 0, 0, 0.9);
   }
 
 `;
 
 const User = styled.a`
-
-align-items: center;
+  align-items: center;
   background: transparent;
   display: flex;
   flex-direction: column;
@@ -287,6 +422,31 @@ align-items: center;
   }
 `;
 
+const UserSmallMedia = styled.a`
+  align-items: center;
+  background: transparent;
+  flex-direction: column;
+  display: none;
+  font-size: 12px;
+  font-weight: 400;
+  justify-content: center;
+  line-height: 3;
+  min-width: 56px;
+  position: relative;
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
+  @media (max-width: 768px) {
+  ${(props) =>
+    props.isSmallMedia
+      ? css`
+         display: flex;
+        `
+      : css`
+      `
+    }
+  }
+`;
+
 const UserProfile = styled.div`
   margin: -5px;
   width: 30px;
@@ -302,6 +462,7 @@ const UserProfile = styled.div`
   box-shadow: 0 0 0 1px rgb(0 0 0 / 15%), 0 0 0 rgb(0 0 0 / 20%);
   >img {
     width: 100%;
+    height: 100%;
     object-fit: cover;
   }
   >svg {
